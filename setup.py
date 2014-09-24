@@ -5,6 +5,9 @@ def desc():
     with open("README.md") as f:
         return f.read()
 
+def reqs():
+    with open('requirements.txt') as f:
+        return f.read().splitlines()
 
 setup(
     name='frasco-assets',
@@ -19,11 +22,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms='any',
-    install_requires=[
+    install_requires=reqs() + [
         'frasco',
-        'easywebassets',
-        'Flask-Assets==0.10',
-        'cssmin',
-        'jsmin'
+        'easywebassets'
     ]
 )
