@@ -1,4 +1,4 @@
-from frasco import Feature, Markup, copy_extra_feature_options, command
+from frasco import Feature, Markup, copy_extra_feature_options, command, Blueprint
 from frasco.templating import jinja_fragment_extension, FileLoader
 from werkzeug.local import LocalProxy
 from flask import _request_ctx_stack
@@ -48,10 +48,18 @@ class Assets(BaseAssets):
             self.init_app(app)
 
     def init_app(self, app):
+        self.app = app
         self.env.init_app(app)
         @app.before_request
         def init_current_assets(*args, **kwargs):
             _request_ctx_stack.top.current_assets = Package(env=self, *self.defaults)
+
+
+class AssetsBlueprint(Blueprint):
+    def __init__(self, name, import_name, **kwargs):
+        kwargs.setdefault('static_url_path', '/static/vendor/%s' % name)
+        kwargs.setdefault('static_folder', 'static')
+        super(AssetsBlueprint, self).__init__(name, import_name, **kwargs)
 
 
 class AssetsFeature(Feature):
@@ -60,6 +68,7 @@ class AssetsFeature(Feature):
     
     def init_app(self, app):
         copy_extra_feature_options(self, app.config, "ASSETS_")
+        self.app = app
         app.assets = self.assets = Assets(app)
         app.jinja_env.loader.bottom_loaders.append(FileLoader(
             os.path.join(os.path.dirname(__file__), "layout.html"), "assets_layout.html"))
@@ -70,6 +79,9 @@ class AssetsFeature(Feature):
             app.assets.register(app.config["ASSETS"])
             if "default" in app.config["ASSETS"]:
                 app.assets.defaults.append("@default")
+
+    def expose_package(self, name, import_name):
+        self.app.register_blueprint(AssetsBlueprint(name, import_name))
 
     @property
     def cli_env(self):
