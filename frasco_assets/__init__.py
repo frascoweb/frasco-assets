@@ -73,6 +73,7 @@ class AssetsFeature(Feature):
         app.jinja_env.loader.bottom_loaders.append(FileLoader(
             os.path.join(os.path.dirname(__file__), "layout.html"), "assets_layout.html"))
         app.jinja_env.loader.set_layout_alias("assets_layout.html")
+        app.config.setdefault('EXPORTED_JS_VARS', {})
 
     def init_declarative(self, app):
         if "ASSETS" in app.config:
