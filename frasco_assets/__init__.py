@@ -1,4 +1,4 @@
-from frasco import Feature, Markup, copy_extra_feature_options, command, Blueprint
+from frasco import Feature, Markup, copy_extra_feature_options, command, Blueprint, signal
 from frasco.templating import jinja_fragment_extension, FileLoader
 from werkzeug.local import LocalProxy
 from flask import _request_ctx_stack
@@ -65,6 +65,11 @@ class AssetsBlueprint(Blueprint):
 class AssetsFeature(Feature):
     name = "assets"
     ignore_attributes = ["cli_env"]
+
+    before_build_signal = signal('before_assets_build')
+    after_build_signal = signal('after_assets_build')
+    before_clean_signal = signal('before_assets_clean')
+    after_clean_signal = signal('after_assets_clean')
     
     def init_app(self, app):
         copy_extra_feature_options(self, app.config, "ASSETS_")
@@ -93,7 +98,9 @@ class AssetsFeature(Feature):
 
     @command()
     def build(self):
+        self.before_build_signal.send(self)
         self.cli_env.build()
+        self.after_build_signal.send(self)
 
     @command()
     def watch(self):
@@ -101,7 +108,9 @@ class AssetsFeature(Feature):
 
     @command()
     def clean(self):
+        self.before_clean_signal.send(self)
         self.cli_env.clean()
+        self.after_clean_signal.send(self)
 
     @command()
     def check(self):
