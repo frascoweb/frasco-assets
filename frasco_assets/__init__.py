@@ -89,6 +89,14 @@ class AssetsFeature(Feature):
     def expose_package(self, name, import_name):
         self.app.register_blueprint(AssetsBlueprint(name, import_name))
 
+    def add_default(self, *assets):
+        insert_at = 0
+        if "@default" in self.app.assets.defaults:
+            insert_at = self.app.assets.defaults.index("@default")
+        for asset in assets:
+            self.app.assets.defaults.insert(insert_at, asset)
+            insert_at += 1
+
     @property
     def cli_env(self):
         log = logging.getLogger('webassets')
