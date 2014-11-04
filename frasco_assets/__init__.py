@@ -34,8 +34,6 @@ class Environment(BaseEnvironment):
     def init_app(self, app):
         self.app = app
         app.jinja_env.add_extension(AssetsExtension)
-        if app.debug:
-            self.debug = True
 
 
 class Assets(BaseAssets):
@@ -73,6 +71,8 @@ class AssetsFeature(Feature):
     
     def init_app(self, app):
         copy_extra_feature_options(self, app.config, "ASSETS_")
+        if "ASSETS_DEBUG" not in app.config and app.debug:
+            app.config["ASSETS_DEBUG"] = True
         self.app = app
         app.assets = self.assets = Assets(app)
         app.jinja_env.loader.bottom_loaders.append(FileLoader(
