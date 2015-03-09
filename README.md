@@ -2,7 +2,7 @@
 
 Assets manager for Frasco using [webassets](http://webassets.readthedocs.org/en/latest/),
 [Flask-Assets](http://flask-assets.readthedocs.org/en/latest/) and
-[easywebassets]().
+[easywebassets](https://github.com/frascoweb/easywebassets).
 
 ## Installation
 
