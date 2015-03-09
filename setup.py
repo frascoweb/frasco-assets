@@ -16,7 +16,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        # 'frasco',
+        'frasco',
         'easywebassets',
         'Flask-Assets>=0.10',
         'cssmin',
