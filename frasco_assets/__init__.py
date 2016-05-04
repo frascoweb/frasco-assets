@@ -63,6 +63,7 @@ class AssetsBlueprint(Blueprint):
 class AssetsFeature(Feature):
     name = "assets"
     ignore_attributes = ["cli_env"]
+    defaults = {"debug_js_var": True}
 
     before_build_signal = signal('before_assets_build')
     after_build_signal = signal('after_assets_build')
@@ -79,6 +80,8 @@ class AssetsFeature(Feature):
             os.path.join(os.path.dirname(__file__), "layout.html"), "assets_layout.html"))
         app.jinja_env.loader.set_layout_alias("assets_layout.html")
         app.config.setdefault('EXPORTED_JS_VARS', {})
+        if app.debug and self.options["debug_js_var"]:
+            app.config['EXPORTED_JS_VARS']['DEBUG'] = True
 
     def init_declarative(self, app):
         if "ASSETS" in app.config:
