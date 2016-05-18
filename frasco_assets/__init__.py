@@ -1,4 +1,4 @@
-from frasco import Feature, Markup, copy_extra_feature_options, command, Blueprint, signal
+from frasco import Feature, Markup, copy_extra_feature_options, command, Blueprint, signal, hook
 from frasco.templating import jinja_fragment_extension, FileLoader
 from werkzeug.local import LocalProxy
 from flask import _request_ctx_stack
@@ -65,12 +65,14 @@ class AssetsFeature(Feature):
     ignore_attributes = ["cli_env"]
     defaults = {"debug_js_var": True}
 
+    auto_build_signal = signal('auto_build_assets')
     before_build_signal = signal('before_assets_build')
     after_build_signal = signal('after_assets_build')
     before_clean_signal = signal('before_assets_clean')
     after_clean_signal = signal('after_assets_clean')
     
     def init_app(self, app):
+        self.auto_built = False
         copy_extra_feature_options(self, app.config, "ASSETS_")
         if "ASSETS_DEBUG" not in app.config and app.debug:
             app.config["ASSETS_DEBUG"] = True
@@ -99,6 +101,19 @@ class AssetsFeature(Feature):
         for asset in assets:
             self.app.assets.defaults.insert(insert_at, asset)
             insert_at += 1
+
+    def register_assets_builder(self, callback, wrap=True):
+        listener = callback
+        if wrap:
+            listener = lambda *args: callback()
+        self.auto_build_signal.connect(listener, weak=False)
+        self.before_build_signal.connect(listener, weak=False)
+
+    @hook()
+    def before_request(self):
+        if not self.auto_built and self.assets.env.config["auto_build"]:
+            self.auto_build_signal.send(self)
+            self.auto_built = True
 
     @property
     def cli_env(self):
