@@ -2,7 +2,7 @@ from frasco import Feature, Markup, copy_extra_feature_options, command, Bluepri
 from frasco.templating import jinja_fragment_extension, FileLoader
 from werkzeug.local import LocalProxy
 from flask import _request_ctx_stack
-from flask.ext.assets import Environment as BaseEnvironment
+from flask_assets import Environment as BaseEnvironment
 from easywebassets import Assets as BaseAssets, Bundle, Package
 from webassets.script import CommandLineEnvironment
 import os
