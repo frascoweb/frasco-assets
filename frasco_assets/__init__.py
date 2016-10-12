@@ -32,8 +32,8 @@ def AssetsExtension(*args, **kwargs):
 
 class Environment(BaseEnvironment):
     def init_app(self, app):
-        self.app = app
         app.jinja_env.add_extension(AssetsExtension)
+        app.jinja_env.assets_environment = self
 
 
 class Assets(BaseAssets):
