@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='frasco-assets',
-    version='0.2.1',
+    version='0.2.2',
     url='http://github.com/frascoweb/frasco-assets',
     license='MIT',
     author='Maxime Bouroumeau-Fuseau',
@@ -18,7 +18,7 @@ setup(
     install_requires=[
         'frasco',
         'easywebassets',
-        'Flask-Assets>=0.12',
+        'Flask-Assets==0.10',
         'cssmin',
         'jsmin'
     ]
