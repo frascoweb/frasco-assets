@@ -37,17 +37,10 @@ class Environment(BaseEnvironment):
 
 
 class Assets(BaseAssets):
-    def __init__(self, app=None, env=None, **kwargs):
-        if not env:
-            env = Environment(**kwargs)
-        super(Assets, self).__init__(env=env)
+    def __init__(self, app):
+        super(Assets, self).__init__(env=Environment(app))
         self.defaults = []
-        if app:
-            self.init_app(app)
-
-    def init_app(self, app):
         self.app = app
-        self.env.init_app(app)
         @app.before_request
         def init_current_assets(*args, **kwargs):
             _request_ctx_stack.top.current_assets = Package(env=self, *self.defaults)
